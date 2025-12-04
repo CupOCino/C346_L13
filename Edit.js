@@ -4,10 +4,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { datasource } from './Data.js';
 
 const Edit = ({navigation, route}) => {
-  const[letter,setLetter] = useState(route.params.key);
+  const [letter,setLetter] = useState(route.params.key);
 
   const saveData = async(value) => {
-    AsyncStorage.setItem("alphadata", value);
+    await AsyncStorage.setItem("alphadata", value);
     navigation.navigate("Home");
   }
 
@@ -19,12 +19,14 @@ const Edit = ({navigation, route}) => {
         <View style={{margin:10,flex:1}}>
         <Button title='Save'
           onPress={()=>{
+            let mydata = JSON.parse(route.params.datastring);
             let indexnum = 1
-            if(route.params.type=="Vowels") {
+            if (route.params.type === "Vowels") {
               indexnum = 0;
             }
-            datasource[indexnum].data[route.params.index].key=letter;
-            navigation.navigate("Home")
+            mydata[indexnum].data[route.params.index].key=letter;
+            let stringdata = JSON.stringify(mydata);
+            saveData(stringdata);
           }
         }
         />
@@ -32,14 +34,16 @@ const Edit = ({navigation, route}) => {
         <View style={{margin:10,flex:1}}>
         <Button title='Delete'
           onPress={()=>{
+            let mydata = JSON.parse(route.params.datastring);
             let indexnum = 1
-            if(route.params.type=="Vowels") {
+            if (route.params.type === "Vowels") {
               indexnum = 0;
             }
             Alert.alert("Are you sure?",'',
               [{text:'Yes', onPress:()=>{
-                datasource[indexnum].data.splice(route.params.index,1);
-                navigation.navigate("Home")
+                mydata[indexnum].data.splice(route.params.index,1);
+                let stringdata = JSON.stringify(mydata);
+                saveData(stringdata);
               }},
               {text:'No'}])
           }
